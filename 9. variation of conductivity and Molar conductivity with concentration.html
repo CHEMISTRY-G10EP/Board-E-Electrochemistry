@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  
+  
+  <title> Quiz – 9. Variation of Conductivity and Molar Conductivity with Concentration, including strong and weak electrolytes, limiting molar conductivity, Kohlrausch’s law, and applications</title>
+  
+  
+  <style>
+    body{font-family:Arial, sans-serif;padding:20px;background:#121212;color:#f0f0f0;}
+    #logo{display:block;margin:0 auto 25px;max-width:180px;}
+    #name-container{background:#1e1e1e;padding:30px;border-radius:6px;max-width:420px;margin:0 auto;}
+    #name-container input{width:100%;padding:10px;margin:10px 0 15px;border:none;border-radius:4px;font-size:16px;}
+    #quiz-container{display:none;}
+    .question{border:1px solid #333;padding:15px;margin-bottom:20px;border-radius:5px;background:#1e1e1e;}
+    .question h3{margin:0 0 10px;}
+    .option-item { display: flex; align-items: center; gap: 8px; margin: 6px 0; padding: 6px 8px; border-radius: 4px; background: #2a2a2a; color: #ccc; cursor: pointer; }
+    .option-item input[type="radio"] { margin: 0; }
+    .submit-button,.toggle-button,.dontknow-button{margin-top:10px;padding:6px 12px;background:#007BFF;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:5px;}
+    .solution{display:none;margin-top:10px;background:#2d2d2d;padding:10px;border-left:4px solid #28a745;}
+    #scorecard{background:#2d2d2d;padding:15px;border-radius:6px;margin-top:30px;display:none;}
+    #timer{font-weight:bold;color:#00ffcc;}
+    #studentPrintName{text-align:center;font-size:18px;font-weight:bold;margin-top:-15px;margin-bottom:5px;display:none;}
+    #examDateTime{text-align:center;font-size:14px;margin-bottom:20px;display:none;}
+    @media print {
+      body { background: #fff; color:#000; }
+      .submit-button, .dontknow-button, .toggle-button, #reportBtn, #reportModal { display:none !important; }
+      #name-container { display:none !important; }
+    }
+    #reportBtn { position: fixed; bottom: 20px; right: 20px; background: #ff4757; color: white; border: none; padding: 12px 18px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0px 4px 10px rgba(0,0,0,0.3); z-index: 1000; }
+    #reportModal { display: none; position: fixed; bottom: 80px; right: 20px; background: #1e1e1e; border: 1px solid #444; padding: 15px; border-radius: 8px; width: 260px; z-index: 1001; }
+    #reportModal textarea { width: 100%; height: 80px; padding: 8px; border: none; border-radius: 4px; resize: none; font-size: 14px; }
+    #reportModal button { margin-top: 10px; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    #sendReport { background: #28a745; color: white; }
+    #closeReport { background: #dc3545; color: white; margin-left: 5px; }
+  </style>
+
+  <!-- MathJax Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)'], ['$', '$']], 
+        displayMath: [['$$','$$'], ['\\[','\\]']],
+        processEscapes: true
+      },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<img id="logo" src="https://i.ibb.co/WNZTWPwv/LOGO-PNG-2025-fab.png" alt="Logo" />
+
+<div id="studentPrintName"></div>
+<div id="examDateTime"></div>
+
+<div id="name-container">
+  <h2>Enter your name to begin</h2>
+  <input type="text" id="studentNameInput" placeholder="Your Name" />
+  <button class="submit-button" onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<div id="quiz-container">
+
+
+  <h2> Quiz – 9. Variation of Conductivity and Molar Conductivity with Concentration, including strong and weak electrolytes, limiting molar conductivity, Kohlrausch’s law, and applications</h2>
+  
+  
+  <p><strong>Time Elapsed:</strong> <span id="timer">00:00</span></p>
+  <div id="questions-container"></div>
+
+  <div style="margin-top:30px;">
+    <button class="submit-button" onclick="finalSubmit()">Final Submit</button>
+    <button class="submit-button" onclick="printQuestions()">Print Questions</button>
+    <button class="submit-button" id="printScoreBtn" onclick="printScorecard()" style="display:none;">Save or Print Scorecard</button>
+    <button class="submit-button" id="shareWhatsappBtn" style="display:none;">SHARE on WhatsApp</button>
+  </div>
+
+ <div id="scorecard">
+  <h3>Your Scorecard</h3>
+  <p id="scoreText"></p>
+  <table id="scoreTable" border="1" cellspacing="0" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:15px;">
+    <thead style="background:#333;color:#fff;">
+      <tr>
+        <th>Q.No</th>
+        <th>Question</th>
+        <th>Your Answer</th>
+        <th>Correct Answer</th>
+        <th>Result</th>
+        <th>Solution</th>
+      </tr>
+    </thead>
+    <tbody id="scoreDetails"></tbody>
+  </table>
+</div>
+
+<button id="reportBtn">Report Mistake</button>
+
+<div id="reportModal">
+  <textarea id="reportMsg" placeholder="Describe the mistake..."></textarea>
+  <div style="text-align:right;">
+    <button id="sendReport">Send</button>
+    <button id="closeReport">Close</button>
+  </div>
+</div>
+
+<script>
+
+
+const Q = [
+  {
+    "id": "q1",
+    "text": "Molar conductivity ($\\Lambda_m$) is defined as:",
+    "options": [
+      "$\\Lambda_m = \\kappa / c$",
+      "$\\Lambda_m = \\kappa \\cdot c$",
+      "$\\Lambda_m = \\kappa \\cdot l / A$",
+      "$\\Lambda_m = R \\cdot \\kappa$"
+    ],
+    "correct": "A",
+    "solution": "Molar conductivity $\\Lambda_m = \\kappa / c$, where $c$ is molar concentration.",
+    "solution_steps": [
+      "Step 1: Conductivity $\\kappa$ in S/cm",
+      "Step 2: Concentration $c$ in mol/cm³",
+      "Step 3: $\\Lambda_m = \\kappa / c$"
+    ]
+  },
+  {
+    "id": "q2",
+    "text": "For a strong electrolyte, molar conductivity:",
+    "options": [
+      "Decreases with dilution",
+      "Increases slightly with dilution",
+      "Remains constant",
+      "Increases sharply with dilution"
+    ],
+    "correct": "B",
+    "solution": "Strong electrolytes are almost completely dissociated, so molar conductivity increases slightly on dilution due to reduced interionic interactions.",
+    "solution_steps": [
+      "Step 1: Strong electrolyte mostly ionized",
+      "Step 2: Dilution decreases interionic attractions",
+      "Step 3: Slight increase in molar conductivity"
+    ]
+  },
+  {
+    "id": "q3",
+    "text": "For weak electrolytes, molar conductivity:",
+    "options": [
+      "Decreases with dilution",
+      "Increases sharply with dilution",
+      "Remains constant",
+      "Oscillates"
+    ],
+    "correct": "B",
+    "solution": "Weak electrolytes are partially ionized; dilution increases ionization, causing a sharp increase in molar conductivity.",
+    "solution_steps": [
+      "Step 1: Weak electrolyte partially ionized",
+      "Step 2: Dilution shifts equilibrium: HA ⇌ H⁺ + A⁻",
+      "Step 3: More ions → higher molar conductivity"
+    ]
+  },
+  {
+    "id": "q4",
+    "text": "Limiting molar conductivity ($\\Lambda_m^0$) is:",
+    "options": [
+      "Molar conductivity at infinite dilution",
+      "Molar conductivity at high concentration",
+      "Conductivity of solution",
+      "Resistance of electrolyte"
+    ],
+    "correct": "A",
+    "solution": "$\\Lambda_m^0$ is the maximum molar conductivity attained when the solution is infinitely dilute.",
+    "solution_steps": [
+      "Step 1: At infinite dilution, interionic attraction vanishes",
+      "Step 2: Maximum ion mobility → maximum molar conductivity",
+      "Step 3: This value is denoted as $\\Lambda_m^0$"
+    ]
+  },
+  {
+    "id": "q5",
+    "text": "Kohlrausch's law states that:",
+    "options": [
+      "Limiting molar conductivity of electrolyte = sum of ionic conductivities",
+      "Molar conductivity decreases with dilution",
+      "Conductivity is independent of concentration",
+      "Resistance is proportional to length"
+    ],
+    "correct": "A",
+    "solution": "Limiting molar conductivity is the sum of individual ionic conductivities at infinite dilution.",
+    "solution_steps": [
+      "Step 1: For electrolyte: MX → M⁺ + X⁻",
+      "Step 2: $\\Lambda_m^0 = \\lambda_{M^+}^0 + \\lambda_{X^-}^0$",
+      "Step 3: Valid for strong electrolytes"
+    ]
+  },
+  {
+    "id": "q6",
+    "text": "Limiting molar conductivity of NaCl is 126.4 S·cm²/mol. If $\\lambda_{Na^+}^0 = 50.1$ S·cm²/mol, find $\\lambda_{Cl^-}^0$.",
+    "options": [
+      "76.3",
+      "70.0",
+      "50.0",
+      "126.4"
+    ],
+    "correct": "A",
+    "solution": "$\\lambda_{Cl^-}^0 = \\Lambda_m^0 - \\lambda_{Na^+}^0 = 126.4 - 50.1 = 76.3$ S·cm²/mol",
+    "solution_steps": [
+      "Step 1: $\\Lambda_m^0 = \\lambda_{Na^+}^0 + \\lambda_{Cl^-}^0$",
+      "Step 2: $\\lambda_{Cl^-}^0 = 126.4 - 50.1 = 76.3$"
+    ]
+  },
+  {
+    "id": "q7",
+    "text": "The plot of molar conductivity vs square root of concentration for a weak electrolyte is:",
+    "options": [
+      "Linear with negative slope",
+      "Linear with positive slope",
+      "Curved and rises sharply with dilution",
+      "Constant"
+    ],
+    "correct": "C",
+    "solution": "For weak electrolytes, molar conductivity increases sharply with dilution due to increased ionization.",
+    "solution_steps": [
+      "Step 1: Weak electrolyte: HA ⇌ H⁺ + A⁻",
+      "Step 2: Dilution increases ionization",
+      "Step 3: Molar conductivity rises sharply → curved graph"
+    ]
+  },
+  {
+    "id": "q8",
+    "text": "A 0.01 M CH₃COOH solution has molar conductivity $\\Lambda_m = 390$ S·cm²/mol. Its limiting molar conductivity is 390 S·cm²/mol. Degree of dissociation ($\\alpha$) is:",
+    "options": [
+      "1",
+      "0.5",
+      "0.1",
+      "0.01"
+    ],
+    "correct": "A",
+    "solution": "$\\alpha = \\Lambda_m / \\Lambda_m^0 = 390 / 390 = 1$",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: Substitute: 390 / 390 = 1",
+      "Step 3: Fully dissociated"
+    ]
+  },
+  {
+    "id": "q9",
+    "text": "Which statement is correct for strong electrolytes?",
+    "options": [
+      "Molar conductivity at infinite dilution is high",
+      "Degree of dissociation increases with concentration",
+      "Molar conductivity decreases sharply with dilution",
+      "Ionic contribution is negligible"
+    ],
+    "correct": "A",
+    "solution": "Strong electrolytes are completely dissociated; $\Lambda_m^0$ is high due to free ions.",
+    "solution_steps": [
+      "Step 1: Strong electrolytes fully ionized",
+      "Step 2: Maximum ionic mobility",
+      "Step 3: Limiting molar conductivity is high"
+    ]
+  },
+  {
+    "id": "q10",
+    "text": "Molar conductivity of 0.001 M HCl is 426 S·cm²/mol. Limiting molar conductivity is 426 S·cm²/mol. Degree of dissociation is:",
+    "options": [
+      "1",
+      "0.1",
+      "0.01",
+      "0.5"
+    ],
+    "correct": "A",
+    "solution": "Degree of dissociation $\alpha = \\Lambda_m / \\Lambda_m^0 = 426/426 = 1$",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: 426 / 426 = 1 → fully dissociated"
+    ]
+  },
+  {
+    "id": "q11",
+    "text": "Kohlrausch’s law can be applied to determine:",
+    "options": [
+      "Limiting molar conductivity of weak electrolytes",
+      "Conductivity of water",
+      "Resistance of strong electrolytes at high concentration",
+      "Temperature coefficient of resistance"
+    ],
+    "correct": "A",
+    "solution": "Kohlrausch’s law allows determination of limiting molar conductivity of weak electrolytes using ionic conductivities of strong electrolytes.",
+    "solution_steps": [
+      "Step 1: $\Lambda_m^0 (weak) = \\lambda_+^0 + \\lambda_-^0$",
+      "Step 2: Ionic conductivities of strong electrolytes are used",
+      "Step 3: Apply to weak electrolyte at infinite dilution"
+    ]
+  },
+  {
+    "id": "q12",
+    "text": "If $\Lambda_m^0$(NaOH) = 248 S·cm²/mol, $\lambda_{Na^+}^0 = 50$, find $\lambda_{OH^-}^0$:",
+    "options": [
+      "198",
+      "100",
+      "248",
+      "50"
+    ],
+    "correct": "A",
+    "solution": "$\\lambda_{OH^-}^0 = 248 - 50 = 198$ S·cm²/mol",
+    "solution_steps": [
+      "Step 1: $\Lambda_m^0 = \\lambda_{Na^+}^0 + \\lambda_{OH^-}^0$",
+      "Step 2: $\lambda_{OH^-}^0 = 248 - 50 = 198$"
+    ]
+  },
+  {
+    "id": "q13",
+    "text": "Which of the following is true for variation of molar conductivity with concentration?",
+    "options": [
+      "Strong electrolytes: slight increase with dilution",
+      "Weak electrolytes: sharp increase with dilution",
+      "Both above",
+      "None of the above"
+    ],
+    "correct": "C",
+    "solution": "Strong electrolytes: slight increase; Weak electrolytes: sharp increase due to ionization.",
+    "solution_steps": [
+      "Step 1: Strong electrolytes mostly dissociated",
+      "Step 2: Weak electrolytes partially dissociated",
+      "Step 3: Dilution increases degree of dissociation → higher molar conductivity"
+    ]
+  },
+  {
+    "id": "q14",
+    "text": "A solution of CH₃COOH has $\Lambda_m = 390$, $\Lambda_m^0 = 390$. Degree of dissociation:",
+    "options": [
+      "1",
+      "0.5",
+      "0.1",
+      "0.01"
+    ],
+    "correct": "A",
+    "solution": "Degree of dissociation $\alpha = \\Lambda_m / \\Lambda_m^0 = 1$",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: 390 / 390 = 1 → fully dissociated"
+    ]
+  },
+  {
+    "id": "q15",
+    "text": "Molar conductivity of 0.001 M KCl solution is 150 S·cm²/mol. Limiting molar conductivity is 150. Find $\alpha$:",
+    "options": [
+      "1",
+      "0.5",
+      "0.01",
+      "0.1"
+    ],
+    "correct": "A",
+    "solution": "$\\alpha = 1$, fully dissociated strong electrolyte",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: 150/150 = 1"
+    ]
+  },
+  {
+    "id": "q16",
+    "text": "Which of the following is an application of Kohlrausch’s law?",
+    "options": [
+      "Determination of $\Lambda_m^0$ for weak electrolytes",
+      "Calculation of cell constant",
+      "Measurement of resistance",
+      "Determination of viscosity"
+    ],
+    "correct": "A",
+    "solution": "Kohlrausch’s law is used to find limiting molar conductivity of weak electrolytes using ionic conductivities of strong electrolytes.",
+    "solution_steps": [
+      "Step 1: $\Lambda_m^0 (weak) = \\lambda_+^0 + \\lambda_-^0$",
+      "Step 2: Use known ionic conductivities from strong electrolytes",
+      "Step 3: Determine $\Lambda_m^0$"
+    ]
+  },
+  {
+    "id": "q17",
+    "text": "Limiting molar conductivity of HCl = 426, KCl = 150. $\lambda_{H^+}^0 = 349$ S·cm²/mol. Find $\lambda_{Cl^-}^0$:",
+    "options": [
+      "77",
+      "150",
+      "349",
+      "426"
+    ],
+    "correct": "A",
+    "solution": "$\\lambda_{Cl^-}^0 = \\Lambda_m^0(HCl) - \\lambda_{H^+}^0 = 426 - 349 = 77$ S·cm²/mol",
+    "solution_steps": [
+      "Step 1: $\Lambda_m^0(HCl) = \\lambda_{H^+}^0 + \\lambda_{Cl^-}^0$",
+      "Step 2: $\lambda_{Cl^-}^0 = 426 - 349 = 77$"
+    ]
+  },
+  
+  {
+    "id": "q18",
+    "text": "If $\Lambda_m^0$(NaOH) = 248 S·cm²/mol and $\lambda_{OH^-}^0 = 198$, find $\lambda_{Na^+}^0$.",
+    "options": [
+      "50",
+      "198",
+      "248",
+      "100"
+    ],
+    "correct": "A",
+    "solution": "$\\lambda_{Na^+}^0 = \\Lambda_m^0 - \\lambda_{OH^-}^0 = 248 - 198 = 50$ S·cm²/mol",
+    "solution_steps": [
+      "Step 1: $\\Lambda_m^0 = \\lambda_{Na^+}^0 + \\lambda_{OH^-}^0$",
+      "Step 2: $\\lambda_{Na^+}^0 = 248 - 198 = 50$"
+    ]
+  },
+  {
+    "id": "q19",
+    "text": "A 0.002 M solution of CH₃COOH has molar conductivity 390 S·cm²/mol. If $\Lambda_m^0 = 390$, degree of dissociation is:",
+    "options": [
+      "1",
+      "0.5",
+      "0.1",
+      "0.01"
+    ],
+    "correct": "A",
+    "solution": "$\\alpha = \\Lambda_m / \\Lambda_m^0 = 390/390 = 1$",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: 390 / 390 = 1 → fully dissociated"
+    ]
+  },
+  {
+    "id": "q20",
+    "text": "Molar conductivity of KCl at 0.001 M is 150 S·cm²/mol and at 0.01 M is 148 S·cm²/mol. This shows:",
+    "options": [
+      "Strong electrolyte: slight increase with dilution",
+      "Weak electrolyte: sharp increase with dilution",
+      "No change",
+      "Non-electrolyte"
+    ],
+    "correct": "A",
+    "solution": "Strong electrolytes like KCl show slight increase in molar conductivity with dilution.",
+    "solution_steps": [
+      "Step 1: KCl is strong electrolyte",
+      "Step 2: Already fully dissociated",
+      "Step 3: Dilution slightly increases molar conductivity due to reduced interionic interactions"
+    ]
+  },
+  {
+    "id": "q21",
+    "text": "The limiting molar conductivity of a weak electrolyte CH₃COOH is determined using Kohlrausch law if $\lambda_{H^+}^0 = 349$, $\lambda_{CH_3COO^-}^0 = 40$. Find $\Lambda_m^0$ of CH₃COOH.",
+    "options": [
+      "389",
+      "349",
+      "40",
+      "400"
+    ],
+    "correct": "A",
+    "solution": "$\\Lambda_m^0 = \\lambda_{H^+}^0 + \\lambda_{CH_3COO^-}^0 = 349 + 40 = 389$ S·cm²/mol",
+    "solution_steps": [
+      "Step 1: Apply Kohlrausch law: $\\Lambda_m^0 = \\lambda_+^0 + \\lambda_-^0$",
+      "Step 2: Substitute values: 349 + 40 = 389"
+    ]
+  },
+  {
+    "id": "q22",
+    "text": "Limiting molar conductivity of HCl = 426, NaCl = 126.4. Find $\lambda_{Cl^-}^0$ using Kohlrausch law.",
+    "options": [
+      "77",
+      "150",
+      "349",
+      "126.4"
+    ],
+    "correct": "A",
+    "solution": "$\\lambda_{Cl^-}^0 = \\Lambda_m^0(HCl) - \\lambda_{H^+}^0 = 426 - 349 = 77$ S·cm²/mol",
+    "solution_steps": [
+      "Step 1: $\Lambda_m^0(HCl) = \\lambda_{H^+}^0 + \\lambda_{Cl^-}^0$",
+      "Step 2: $\lambda_{Cl^-}^0 = 426 - 349 = 77$"
+    ]
+  },
+  {
+    "id": "q23",
+    "text": "The molar conductivity of 0.01 M HCl is 390 S·cm²/mol and $\Lambda_m^0 = 426$. Find the degree of dissociation ($\\alpha$).",
+    "options": [
+      "0.915",
+      "1",
+      "0.5",
+      "0.1"
+    ],
+    "correct": "A",
+    "solution": "$\\alpha = \\Lambda_m / \\Lambda_m^0 = 390 / 426 = 0.915$",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: 390 / 426 = 0.915"
+    ]
+  },
+  {
+    "id": "q24",
+    "text": "If molar conductivity of acetic acid at 0.001 M is 390 S·cm²/mol and $\Lambda_m^0 = 390$, its degree of dissociation is:",
+    "options": [
+      "1",
+      "0.5",
+      "0.1",
+      "0.01"
+    ],
+    "correct": "A",
+    "solution": "$\\alpha = \\Lambda_m / \\Lambda_m^0 = 1$",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: 390 / 390 = 1 → fully dissociated"
+    ]
+  },
+  {
+    "id": "q25",
+    "text": "A 0.002 M solution of CH₃COOH has molar conductivity 390 S·cm²/mol. Using $\Lambda_m^0 = 389$ S·cm²/mol, find degree of dissociation and comment.",
+    "options": [
+      "1 → almost fully dissociated",
+      "0.5 → partially dissociated",
+      "0.1 → weakly dissociated",
+      "0.01 → negligible"
+    ],
+    "correct": "A",
+    "solution": "Degree of dissociation $\\alpha = \\Lambda_m / \\Lambda_m^0 = 390 / 389 ≈ 1$, so almost fully dissociated.",
+    "solution_steps": [
+      "Step 1: $\alpha = \\Lambda_m / \\Lambda_m^0$",
+      "Step 2: Substitute: 390 / 389 ≈ 1",
+      "Step 3: Conclusion: almost fully dissociated"
+    ]
+  }
+]
+;
+
+
+
+let student = '';
+let timerHandle;
+let printMode = '';
+let examDateTime = '';
+
+const quizTitle = document.title.split("Quiz")[1]?.trim() || document.title;
+
+function startQuiz() {
+  const name = document.getElementById('studentNameInput').value.trim();
+  if (!name) { alert('Please enter your name.'); return; }
+  student = name;
+  examDateTime = new Date().toLocaleString();
+  document.getElementById('name-container').style.display = 'none';
+  document.getElementById('quiz-container').style.display = 'block';
+  buildQuestions();
+  if (window.MathJax) MathJax.typesetPromise();
+  startTimer();
+}
+
+function buildQuestions() {
+  const out = document.getElementById('questions-container');
+  out.innerHTML = '';
+
+  Q.forEach((q, index) => {
+    const qText = q.text || q.question || q.prompt || ''; // tolerate different keys
+
+    // Normalize options into an ordered array of [letter, optionText]
+    let entries = [];
+    if (Array.isArray(q.options)) {
+      entries = q.options.map((opt, i) => [String.fromCharCode(65 + i), opt]);
+    } else if (q.options && typeof q.options === 'object') {
+      const keys = Object.keys(q.options);
+      const keysAreLetters = keys.every(k => /^[A-Z]$/.test(k));
+      if (keysAreLetters) {
+        keys.sort();
+        entries = keys.map(k => [k, q.options[k]]);
+      } else {
+        entries = keys.map((k, i) => [String.fromCharCode(65 + i), q.options[k]]);
+      }
+    }
+
+    const optionsHTML = entries.map(([letter, opt]) => {
+      return `<label class="option-item" for="${q.id}-${letter}">
+                <input type="radio" id="${q.id}-${letter}" name="${q.id}" value="${letter}" onchange="enableSubmit('${q.id}')">
+                ${letter}. ${opt}
+              </label>`;
+    }).join('');
+
+    const imageHTML = q.image ? `<div><img src="${q.image}" alt="figure" style="max-width:360px; margin:10px 0; display:block;"></div>` : '';
+
+    // Handle solution steps if they exist
+let solutionStepsHTML = '';
+if (q.solution_steps && Array.isArray(q.solution_steps) && q.solution_steps.length > 0) {
+  solutionStepsHTML = '<ul style="margin-top:10px;">' +
+    q.solution_steps.map(step => {
+      if (step.includes("\n")) {
+        return `<li><pre style="background:#111; padding:6px; border-radius:4px; overflow-x:auto;">${step}</pre></li>`;
+      }
+      return `<li>${step}</li>`;
+    }).join('') +
+    '</ul>';
+}
+
+
+    out.insertAdjacentHTML('beforeend', `
+      <div class="question" id="${q.id}-wrap">
+        <h3>Q${index + 1}. ${qText}</h3>
+        ${imageHTML}
+        <div class="options">${optionsHTML}</div>
+        <div id="${q.id}-buttons">
+          <button id="sub-${q.id}" class="submit-button" disabled onclick="grade('${q.id}')">Submit</button>
+          <button class="dontknow-button" onclick="skip('${q.id}')">I Don’t Know</button>
+        </div>
+        <button class="toggle-button" id="btn-sol-${q.id}" style="display:none;" onclick="toggleSolution('sol-${q.id}')">Show Solution</button>
+        <div class="solution" id="sol-${q.id}">
+          <strong>Solution:</strong> ${q.solution || ''} ${solutionStepsHTML}
+        </div>
+      </div>
+    `);
+  });
+
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') MathJax.typesetPromise();
+}
+
+
+
+function enableSubmit(qid) { document.getElementById(`sub-${qid}`).disabled = false; }
+
+function grade(qid) {
+  const q = Q.find(x => x.id === qid);
+  // accept different possible field names for the correct answer
+  const correct = q.correct || q.answer || q.key || q.correctAnswer;
+  const chosen = document.querySelector(`input[name="${qid}"]:checked`);
+  if (!chosen) return;
+
+  // lock options
+  document.querySelectorAll(`input[name="${qid}"]`).forEach(i => i.disabled = true);
+
+  // the chosen label
+  const chosenLabel = chosen.closest('label.option-item');
+
+  // find input that matches the correct letter
+  const correctInput = document.querySelector(`input[name="${qid}"][value="${correct}"]`);
+  const correctLabel = correctInput ? correctInput.closest('label.option-item') : null;
+
+  if (chosen.value === correct) {
+    // correct
+    if (chosenLabel) {
+      chosenLabel.style.background = '#28a745';
+      chosenLabel.style.color = '#fff';
+    }
+  } else {
+    // wrong: mark chosen red, mark correct green (if found)
+    if (chosenLabel) {
+      chosenLabel.style.background = '#dc3545';
+      chosenLabel.style.color = '#fff';
+    }
+    if (correctLabel) {
+      correctLabel.style.background = '#28a745';
+      correctLabel.style.color = '#fff';
+    }
+  }
+
+  // show solution immediately
+  const solElem = document.getElementById(`sol-${qid}`);
+  if (solElem) solElem.style.display = "block";
+
+  // hide the buttons for this question
+  const buttons = document.getElementById(`${qid}-buttons`);
+  if (buttons) buttons.style.display = "none";
+  const btnSol = document.getElementById(`btn-sol-${q.id}`);
+  if (btnSol) btnSol.style.display = "none";
+
+  // re-typeset MathJax for solution if it contains LaTeX
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') MathJax.typesetPromise();
+}
+
+
+function skip(qid) { document.querySelectorAll(`input[name="${qid}"]`).forEach(r => r.disabled = true); showSolutionButton(qid); }
+function showSolutionButton(qid) { document.getElementById(`btn-sol-${qid}`).style.display = 'inline-block'; document.getElementById(`${qid}-buttons`).style.display = 'none'; }
+function toggleSolution(id) { const elem = document.getElementById(id); elem.style.display = elem.style.display === 'block' ? 'none' : 'block'; }
+
+function startTimer() {
+  const display = document.getElementById('timer');
+  const started = Date.now();
+  timerHandle = setInterval(() => { const s = Math.floor((Date.now() - started) / 1000); display.textContent = `${String((s / 60) | 0).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`; }, 1000);
+}
+
+function finalSubmit() {
+  clearInterval(timerHandle);
+  document.querySelectorAll("input[type=radio]").forEach(r => r.disabled = true);
+  document.querySelectorAll(".submit-button, .dontknow-button").forEach(btn => btn.style.display = "none");
+
+  let totalMarks = 0;
+  let negativeMarks = 0;
+  let possibleMarks = Q.length * 4;
+  let detailHTML = '';
+
+  Q.forEach((q, index) => {
+    const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+    const chosen = checked ? checked.value : null;
+
+    const correctLetter = q.correct || q.answer || q.key || q.correctAnswer;
+
+    let marks = 0;
+    let resultText = "";
+
+    if (chosen === null) {
+      marks = 0;
+      resultText = "⚪ Not Attempted / I Don’t Know (0)";
+    } else if (chosen === correctLetter) {
+      marks = 4;
+      resultText = "✅ Correct (+4)";
+    } else {
+      marks = -1;
+      resultText = "❌ Incorrect (-1)";
+    }
+
+    totalMarks += marks > 0 ? marks : 0;
+    negativeMarks += marks < 0 ? marks : 0;
+
+    let solutionStepsHTML = '';
+    if (q.solution_steps && Array.isArray(q.solution_steps) && q.solution_steps.length > 0) {
+      solutionStepsHTML = '<ul style="margin-top:5px;">' +
+        q.solution_steps.map(step => `<li>${step}</li>`).join('') +
+        '</ul>';
+    }
+
+    detailHTML += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${q.text || q.question}</td>
+        <td>${chosen || 'Not Answered'}</td>
+        <td>${correctLetter}</td>
+        <td>${resultText}</td>
+        <td>${q.solution || ''}${solutionStepsHTML}</td>
+        <td>${marks}</td>
+      </tr>`;
+  });
+
+  const finalScore = totalMarks + negativeMarks;
+
+  document.getElementById('scoreText').innerHTML = `${student}, here is your result:`;
+  document.getElementById('scoreDetails').innerHTML = detailHTML;
+
+  const summaryHTML = `
+    <div style="margin-top:20px; font-weight:bold;">
+      <p>Total Marks (Possible): ${possibleMarks}</p>
+      <p>Total Marks (Correct Answers): ${totalMarks}</p>
+      <p>Negative Marks (Wrong Answers): ${negativeMarks}</p>
+      <p>Final Score: ${finalScore}</p>
+    </div>
+  `;
+  document.getElementById('scorecard').insertAdjacentHTML('beforeend', summaryHTML);
+
+  document.getElementById('scorecard').style.display = 'block';
+  document.getElementById('printScoreBtn').style.display = 'inline-block';
+  document.getElementById('shareWhatsappBtn').style.display = 'inline-block';
+
+  if (window.MathJax && typeof MathJax.typesetPromise === 'function') MathJax.typesetPromise();
+}
+
+
+
+
+
+
+function printQuestions() { printMode = "questions"; window.print(); }
+function printScorecard() { document.getElementById("studentPrintName").innerText = student; document.getElementById("examDateTime").innerText = "Exam Date & Time: " + examDateTime; printMode = "scorecard"; window.print(); }
+
+window.addEventListener('beforeprint', () => {
+  if (printMode === "questions") { document.querySelector("#questions-container").style.display = "block"; document.querySelector("#scorecard").style.display = "none"; document.querySelector("#logo").style.display = "none"; document.querySelector("#name-container").style.display = "none"; document.querySelector("#timer").style.display = "none"; document.querySelector("#studentPrintName").style.display = "none"; document.querySelector("#examDateTime").style.display = "none"; }
+  if (printMode === "scorecard") { document.querySelector("#questions-container").style.display = "none"; document.querySelector("#scorecard").style.display = "block"; document.querySelector("#logo").style.display = "block"; document.querySelector("#name-container").style.display = "none"; document.querySelector("#studentPrintName").style.display = "block"; document.querySelector("#examDateTime").style.display = "block"; }
+});
+window.addEventListener('afterprint', () => { document.querySelector("#questions-container").style.display = ""; document.querySelector("#scorecard").style.display = ""; document.querySelector("#logo").style.display = ""; document.querySelector("#name-container").style.display = ""; document.querySelector("#timer").style.display = ""; document.querySelector("#studentPrintName").style.display = "none"; document.querySelector("#examDateTime").style.display = "none"; });
+
+
+
+
+document.getElementById("shareWhatsappBtn").addEventListener("click", function () {
+  const whatsappNumber = "9108069409455";
+
+  if (!student) {
+    alert("Please complete the quiz first.");
+    return;
+  }
+
+  const scoreText = document.getElementById('scoreText').innerText || "Result not available";
+
+  let totalMarks = 0;
+  let negativeMarks = 0;
+  let possibleMarks = Q.length * 4;
+
+  let details = "";
+
+  Q.forEach((q, i) => {
+    const qNum = i + 1;
+    const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+    let userAns = checked ? checked.value : null;
+    const correctAns = q.correct || q.answer || q.key || q.correctAnswer;
+
+    let marks = 0;
+    let resultText = "";
+
+    if (userAns === null) {
+      marks = 0;
+      resultText = "⚪ Not Attempted / I Don’t Know (0)";
+      userAns = "Not Answered";
+    } else if (userAns === correctAns) {
+      marks = 4;
+      resultText = "✅ Correct (+4)";
+    } else {
+      marks = -1;
+      resultText = "❌ Incorrect (-1)";
+    }
+
+    totalMarks += marks > 0 ? marks : 0;
+    negativeMarks += marks < 0 ? marks : 0;
+
+    details += `Q${qNum} → ${resultText} (Your Ans: ${userAns} | Correct: ${correctAns})\n`;
+  });
+
+  const finalScore = totalMarks + negativeMarks;
+
+  const message = `Sir, I have shared my Test Result for checking. Thank you!\n\n📘 Quiz Title: ${quizTitle}\n👤 Student: ${student}\n\n${scoreText}\n\n📊 Summary:\n✔ Total Marks (Possible): ${possibleMarks}\n✔ Total Marks (Correct Answers): ${totalMarks}\n✔ Negative Marks (Wrong Answers): ${negativeMarks}\n✔ Final Score: ${finalScore}\n\nDetails:\n${details}`;
+
+  const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  window.open(waUrl, "_blank");
+});
+
+
+const reportBtn = document.getElementById("reportBtn");
+const reportModal = document.getElementById("reportModal");
+const sendReport = document.getElementById("sendReport");
+const closeReport = document.getElementById("closeReport");
+const reportMsg = document.getElementById("reportMsg");
+
+reportBtn.onclick = () => { reportModal.style.display = "block"; };
+closeReport.onclick = () => { reportModal.style.display = "none"; reportMsg.value = ""; };
+sendReport.onclick = () => {
+  const msg = reportMsg.value.trim();
+  if (!msg) { alert("Please write your message before sending."); return; }
+  const whatsappNumber = "9108069409455";
+  const message = `⚠️ Reported Mistake\n\n📘 Quiz Title: ${quizTitle}\n👤 Student: ${student || "Anonymous"}\n\n📝 Message:\n${msg}`;
+  const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  window.open(waUrl, "_blank");
+  reportModal.style.display = "none";
+  reportMsg.value = "";
+};
+</script>
+
+</body>
+</html>
